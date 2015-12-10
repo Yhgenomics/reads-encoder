@@ -1,4 +1,5 @@
 #include "SequenceFilter.h"
+#include "codebook.h"
 #include <algorithm>
 
 SequenceFilter::SequenceFilter(){ Init(); }
@@ -6,11 +7,9 @@ SequenceFilter::SequenceFilter(){ Init(); }
 SequenceFilter::~SequenceFilter(){}
 
 void SequenceFilter::Init()
-{
-    fastq_input_    = nullptr;
-    sequence_line_  = nullptr;
-    trim_threshold_ = 36;
-    need_trim_      = true;
+{   
+    trim_threshold_ = 36; // [warning] magic number
+    need_trim_      = false;
     need_upper_     = true;
 }
 
@@ -41,6 +40,7 @@ inline void SequenceFilter::ToUpperCase()
                     ::toupper );
 }
 
+// still has bug can not work well when input sequence has no high quality pair
 inline void SequenceFilter::TrimByQuality()
 {
     size_t end = ( *quality_line_ ).size() - 1;
@@ -80,8 +80,48 @@ inline void SequenceFilter::TrimByQuality()
 
 inline void SequenceFilter::EncodeOneLine()
 {
-    printf("%s\n",sequence_line_->c_str() );
-    //TODO
+    //printf("%s\n",sequence_line_->c_str() );
+    *sequence_line_ += 'E';// add end line mark
+    
+    int  codelen  = ( sequence_line_->size() ) * 3 / 8;
+    int  perfect  = ( sequence_line_->size() ) * 3 % 8;
+    codelen += ( 0 == perfect ) ? 0 : 1;
+    auto codes = make_unique< unsigned char[] >( codelen );
+    int basepari_num = 0;
+    int codestate    = 0;
+    int code_i       = 0;
+    int shift        = 0;
+    //fprintf( stderr , "code lenght is %d\n " , codelen );
+    
+    for ( auto ch : *sequence_line_ )
+    {
+        codes[ code_i ] += ( unsigned char )( CodeBook[ ch - 'A' ] << 5 ) >> shift;
+        shift +=3;
+        if( shift > 8 )
+        {
+            shift -= 8;
+
+            ++code_i;
+            codes[ code_i ] += ( unsigned char )( CodeBook[ ch - 'A' ] << ( 8 - shift ) );
+        }
+        else if ( shift == 8 )
+        {
+            shift -= 8;
+            ++code_i;
+        }
+    }
+
+    if ( 0 != shift ) //rest bit to 1
+    {
+        codes[ code_i ] += ( ( unsigned char )( ALL1 << shift ) >> shift );
+    }
+    
+    for ( int i =0 ;i < codelen ;i++ )
+    { 
+        //fprintf( stderr , "%x " , codes[ i ] );
+        printf("%c",codes[ i ]);
+    }
+    //Add new line mark
 }
 
 int SequenceFilter::GetOneRead()
@@ -90,7 +130,7 @@ int SequenceFilter::GetOneRead()
         return 1;
 
     // iterate on every line, alloc some buffer before doing alignment
-    string * line;
+    unique_ptr<string> line;
 
     char buffer[2000];
 
@@ -104,11 +144,12 @@ int SequenceFilter::GetOneRead()
         }
 
         //get the line
-        line = new string( buffer );
+        line = make_unique<string>(buffer);
 
         // skip empty lines, would not be one in common
         if ('\n' == ( *line )[0] || '\r' == ( *line )[0])
         {
+            fprintf( stderr, "[warning] Empty line!");
             line_num--;
             continue;
         }
@@ -121,13 +162,11 @@ int SequenceFilter::GetOneRead()
         // Fastq format, 0: read name, 1: read seq, 2: read name, 3: quals
         if ( ( ( line_num ) % 4 ) == 1 )
         {
-            if( nullptr != sequence_line_ ) { delete sequence_line_; }
-            sequence_line_ = line;
+            sequence_line_ = move(line);
         }
         else if ( ( ( line_num ) % 4 ) == 3 )
         {
-            if ( nullptr != quality_line_ ) { delete quality_line_;  }
-            quality_line_ = line;
+            quality_line_ = move(line);
         }
 
     }

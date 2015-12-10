@@ -1,3 +1,8 @@
+// Copyright (c) 2015 Yhgenomics. All rights reserved.
+// Description: Code Book 
+// Creator: Ke Yang
+// Date: 2015/12/9
+
 #ifndef CODE_BOOK_H
 #define CODE_BOOK_H
 
@@ -7,14 +12,17 @@
 #define CD_T    0b011
 #define CD_N    0b100
 #define CD_E    0b101 // end of line
-#define CD_O    0b111 // others
+#define CD_F    0b111 // others
 
-const unsigned int CodeBook[60] = \
+
+const unsigned char CodeBook[60] = \
 /*  A     B     C     D     E,    F,    G     H     I     J     K     L     M     N     O     P     Q     R     S     T     U     V     W     X     Y     Z */ \
-{CD_A, CD_O, CD_C, CD_O, CD_O, CD_O, CD_G, CD_O, CD_O, CD_O, CD_O, CD_O, CD_O, CD_N, CD_O, CD_O, CD_O, CD_O, CD_O, CD_T, CD_O, CD_O, CD_O, CD_O, CD_O, CD_O,
+{CD_A, CD_F, CD_C, CD_F, CD_E, CD_F, CD_G, CD_F, CD_F, CD_F, CD_F, CD_F, CD_F, CD_N, CD_F, CD_F, CD_F, CD_F, CD_F, CD_T, CD_F, CD_F, CD_F, CD_F, CD_F, CD_F,
 /*  [      \     ]     ^     _     `  */
-CD_O,  CD_O, CD_O, CD_O, CD_O, CD_O,
+CD_F,  CD_F, CD_F, CD_F, CD_F, CD_F,
 /*  a     b     c     d     e,    f,    g     h     i     j     k     l     m     n     o     p     q     r     s     t     u     v     w     x     y     z */
-CD_A,  CD_O, CD_C, CD_O, CD_O, CD_O, CD_G, CD_O, CD_O, CD_O, CD_O, CD_O, CD_O, CD_N, CD_O, CD_O, CD_O, CD_O, CD_O, CD_T, CD_O, CD_O, CD_O, CD_O, CD_O, CD_O
+CD_A,  CD_F, CD_C, CD_F, CD_E, CD_F, CD_G, CD_F, CD_F, CD_F, CD_F, CD_F, CD_F, CD_N, CD_F, CD_F, CD_F, CD_F, CD_F, CD_T, CD_F, CD_F, CD_F, CD_F, CD_F, CD_F
 };
+
+const unsigned char ALL1 = 0b11111111;
 #endif

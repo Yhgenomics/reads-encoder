@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <string>
+#include <memory>
 
 using namespace std;
 
@@ -21,31 +22,33 @@ public:
     SequenceFilter();
     ~SequenceFilter();
 
-    void    Init() ;
-    void    GetFile( const string fileName );
+    void            Init();
+    void            GetFile( const string fileName );
 
     // Redirect the std cout to file or it will be on monitor 
-    void    ShowAllHighquality();
+    void            ShowAllHighquality();
 
 private:
 
     // Makes all As, Cs, Gs, Ts and Ns to upper case 
-    inline void    ToUpperCase();
+    inline  void    ToUpperCase();
 
     // Cuts less Quality head and tail sequence off by a threshold
-    inline void    TrimByQuality();
+    inline  void    TrimByQuality();
 
     // Encode one line and put it to monitor
-    inline void    EncodeOneLine();
+    inline  void    EncodeOneLine();
 
     // Gets genome reads(4 useable lines) from the .fastq file
-    int     GetOneRead();
+    int             GetOneRead();
 
-    FILE    *fastq_input_;
-    string  *sequence_line_;
-    string  *quality_line_;
-    bool    need_trim_;
-    bool    need_upper_;
-    unsigned char  trim_threshold_;
+    FILE                    *fastq_input_;
+    unique_ptr< string >    sequence_line_;
+    unique_ptr< string >    quality_line_;
+    bool                    need_trim_;
+    bool                    need_upper_;
+    char                    buffer[2000];
+    unsigned char           trim_threshold_;
+    unsigned char           code[8];
 };
 #endif
