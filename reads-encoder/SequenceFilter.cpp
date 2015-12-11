@@ -83,8 +83,8 @@ inline void SequenceFilter::EncodeOneLine()
     //printf("%s\n",sequence_line_->c_str() );
     *sequence_line_ += 'E';// add end line mark
     
-    int  codelen  = ( sequence_line_->size() ) * 3 / 8;
-    int  perfect  = ( sequence_line_->size() ) * 3 % 8;
+    size_t  codelen  = ( sequence_line_->size() ) * 3 / 8;
+    size_t  perfect  = ( sequence_line_->size() ) * 3 % 8;
     codelen += ( 0 == perfect ) ? 0 : 1;
     auto codes = make_unique< unsigned char[] >( codelen );
     int basepari_num = 0;
@@ -116,11 +116,18 @@ inline void SequenceFilter::EncodeOneLine()
         codes[ code_i ] += ( ( unsigned char )( ALL1 << shift ) >> shift );
     }
     
-    for ( int i =0 ;i < codelen ;i++ )
+    for ( size_t i = 0; i < codelen ; ++i )
     { 
         //fprintf( stderr , "%x " , codes[ i ] );
-        printf("%c",codes[ i ]);
+        printf( "%c", codes[ i ] );
     }
+    size_t tail = BlockSize - codelen % BlockSize;
+    for ( size_t i = 0; i < tail ; ++i)
+    {
+        //fprintf( stderr , "%x " , ALL1 );
+        printf( "%c", ALL1 );
+    }
+
     //Add new line mark
 }
 

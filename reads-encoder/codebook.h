@@ -14,8 +14,9 @@
 #define CD_E    0b101 // end of line
 #define CD_F    0b111 // others
 
-
-const unsigned char CodeBook[60] = \
+const unsigned  char    ALL1         = 0b11111111;
+const unsigned  int     BlockSize    = 64;
+const unsigned  char    CodeBook[60] = \
 /*  A     B     C     D     E,    F,    G     H     I     J     K     L     M     N     O     P     Q     R     S     T     U     V     W     X     Y     Z */ \
 {CD_A, CD_F, CD_C, CD_F, CD_E, CD_F, CD_G, CD_F, CD_F, CD_F, CD_F, CD_F, CD_F, CD_N, CD_F, CD_F, CD_F, CD_F, CD_F, CD_T, CD_F, CD_F, CD_F, CD_F, CD_F, CD_F,
 /*  [      \     ]     ^     _     `  */
@@ -24,5 +25,4 @@ CD_F,  CD_F, CD_F, CD_F, CD_F, CD_F,
 CD_A,  CD_F, CD_C, CD_F, CD_E, CD_F, CD_G, CD_F, CD_F, CD_F, CD_F, CD_F, CD_F, CD_N, CD_F, CD_F, CD_F, CD_F, CD_F, CD_T, CD_F, CD_F, CD_F, CD_F, CD_F, CD_F
 };
 
-const unsigned char ALL1 = 0b11111111;
 #endif
